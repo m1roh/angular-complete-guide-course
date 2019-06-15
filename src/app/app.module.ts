@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
@@ -9,6 +10,7 @@ import { RecipeListComponent } from './components/recipe/recipe-list/recipe-list
 import { RecipeViewComponent } from './components/recipe/recipe-view/recipe-view.component';
 import { ShoppingListComponent } from './components/shopping/shopping-list/shopping-list.component';
 import { ShoppingListEditComponent } from './components/shopping/shopping-list-edit/shopping-list-edit.component';
+import { DropdownDirective } from './directives/dropdown.directive';
 
 @NgModule({
   declarations: [
@@ -19,10 +21,12 @@ import { ShoppingListEditComponent } from './components/shopping/shopping-list-e
     RecipeListComponent,
     RecipeViewComponent,
     ShoppingListComponent,
-    ShoppingListEditComponent
+    ShoppingListEditComponent,
+    DropdownDirective
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
