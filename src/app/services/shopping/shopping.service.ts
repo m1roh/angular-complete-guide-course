@@ -12,19 +12,40 @@ export class ShoppingService {
   ];
 
   private ingredientsSubject = new Subject<Ingredient[]>();
-  public ingredients$ = this.ingredientsSubject.asObservable();
+  ingredients$ = this.ingredientsSubject.asObservable();
+
+  private startEditingSubject = new Subject<number>();
+  startEditing$ = this.startEditingSubject.asObservable();
 
   getIngredients(): Ingredient[] {
-    return this.ingredients.slice();
+    return [...this.ingredients];
   }
 
-  addIngredients(ingredients: Ingredient[] | Ingredient): void {
+  getIngredient(index: number): Ingredient {
+    return [...this.ingredients][index];
+  }
+
+  addIngredients(ingredients: Ingredient | Ingredient[]): void {
     if (Array.isArray(ingredients)) {
       this.ingredients.push(...ingredients);
     } else {
       this.ingredients.push(ingredients);
     }
 
-    this.ingredientsSubject.next(this.ingredients.slice());
+    this.ingredientsSubject.next([...this.ingredients]);
+  }
+
+  startEditing(index: number): void {
+    this.startEditingSubject.next(index);
+  }
+
+  updateIngredient(index: number, newIngredient: Ingredient): void {
+    this.ingredients[index] = newIngredient;
+    this.ingredientsSubject.next([...this.ingredients]);
+  }
+
+  deleteIngredient(index: number): void {
+    this.ingredients.splice(index, 1);
+    this.ingredientsSubject.next([...this.ingredients]);
   }
 }

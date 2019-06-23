@@ -1,0 +1,14 @@
+.button-row {
+  display: flex;
+  width: 170px;
+  justify-content: space-between;
+  margin-bottom: 26px;
+}
+.delete-ingredient-btn {
+  margin-top: 24px;
+}
+input, textarea{
+  &.ng-invalid.ng-touched{
+    border: 1px solid red;
+  }
+}
