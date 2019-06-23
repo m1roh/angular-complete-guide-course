@@ -1,21 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Recipe } from '../../../models/recipe.model';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-recipe-view',
   templateUrl: './recipe-view.component.html',
-  styleUrls: ['./recipe-view.component.css']
+  styleUrls: ['./recipe-view.component.scss']
 })
-export class RecipeViewComponent implements OnInit {
-  public recipe: Recipe;
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
-  public onSelectRecipe(recipe: Recipe) {
-    this.recipe = recipe;
-  }
-
-}
+export class RecipeViewComponent {}
