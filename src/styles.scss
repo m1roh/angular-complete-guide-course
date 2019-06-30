@@ -1,3 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 $spacing-s: 8px;
 $spacing-xl: 32px;
+
+.row, li {
+  margin-bottom: $spacing-s;
+}
+
+a {
+  cursor: pointer;
+}

@@ -1,55 +1,46 @@
 import { Injectable } from '@angular/core';
 import { Recipe } from 'src/app/models/recipe.model';
-import { Ingredient } from 'src/app/models/ingredient.model';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { RecipeDto } from '../../models/recipe-dto.model';
+import { map, switchMap } from 'rxjs/operators';
+import { RecipeBuilderService } from './recipe-builder.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecipeService {
   
-  private recipes: Recipe[] = [
-    new Recipe(
-      'A test Recipe',
-      'This is simply a test',
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3roc9z2dhVfAw9VG2T4IfcFqeuhD_LzBBd-p2u3C5eBRxkJbN',
-      [
-        new Ingredient('Meat', 1),
-        new Ingredient('French Fries', 20)
-      ]),
-    new Recipe(
-      'Another test Recipe',
-      'This is simply another a test',
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQXA5pVzN0ws5JStSH_KOq7FVKufGThwewPsw7svJ6PhOS9niV',
-      [
-        new Ingredient('Buns', 2),
-        new Ingredient('Meat', 1)
-      ])
-  ];
+  constructor (private http: HttpClient, private recipeBuilderService: RecipeBuilderService) {}
 
   private recipeSubject = new Subject<Recipe[]>();
   recipes$ = this.recipeSubject.asObservable();
 
-  getRecipes(): Recipe[] {
-    return [...this.recipes];
+  getRecipes(): Observable<Recipe[]> {
+    return this.http.get(`https://ng8-course.firebaseio.com/recipes.json`).pipe(
+      map((recipes: RecipeDto) => {
+        const recipeList = this.recipeBuilderService.buildList(recipes);
+        this.recipeSubject.next(recipeList);
+        return recipeList;
+      })
+    );
   }
 
-  getRecipe(index: number): Recipe {
-    return [...this.recipes][index];
+  getRecipe(index: number): Observable<Recipe> {
+    return this.http.get<Recipe>(`https://ng8-course.firebaseio.com/recipes/${index}.json`);
   }
 
-  addRecipe(recipe: Recipe): void {
-    this.recipes.push(recipe);
-    this.recipeSubject.next([...this.recipes]);
+  addRecipe(recipe: Recipe): Observable<Recipe[]> {
+    return this.http.post<Recipe>(`https://ng8-course.firebaseio.com/recipes.json`, recipe).pipe(
+      switchMap(() => this.getRecipes())
+    );
   }
 
-  updateRecipe(index: number, recipe: Recipe) {
-    this.recipes[index] = recipe;
-    this.recipeSubject.next([...this.recipes]);
+  updateRecipe(index: number, recipe: Recipe): Observable<Recipe> {
+    return this.http.patch<Recipe>(`https://ng8-course.firebaseio.com/recipes/${index}.json`, recipe);
   }
 
-  deleteRecipe(index: number): void {
-    this.recipes.splice(index, 1);
-    this.recipeSubject.next([...this.recipes]);
+  deleteRecipe(index: number): Observable<Recipe> {
+    return this.http.delete<Recipe>(`https://ng8-course.firebaseio.com/recipes/${index}.json`);
   }
 }

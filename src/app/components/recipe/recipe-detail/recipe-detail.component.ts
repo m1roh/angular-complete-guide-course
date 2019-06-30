@@ -3,8 +3,9 @@ import { Recipe } from '../../../models/recipe.model';
 import { Ingredient } from '../../../models/ingredient.model';
 import { ShoppingService } from '../../../services/shopping/shopping.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { RecipeService } from '../../../services/recipe/recipe.service';
+import { switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recipe-detail',
@@ -20,17 +21,21 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
               private router: Router,
               private route: ActivatedRoute) {}
 
-  private routeParams$: Subscription;
+  private destroy$ = new Subject<any>();
 
   ngOnInit(): void {
-    this.routeParams$ = this.route.params.subscribe((params: Params) => {
-      this.id = +params['id'];
-      this.recipe = this.recipeService.getRecipe(this.id);
-    });
+    this.route.params.pipe(
+      takeUntil(this.destroy$),
+      switchMap((params: Params) => {
+        this.id = params['id'];
+        return this.recipeService.getRecipe(this.id);
+      })
+    ).subscribe((recipe: Recipe) => this.recipe = recipe);
   }
 
   ngOnDestroy(): void {
-    this.routeParams$.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onAddToShoppingList(ingredients: Ingredient[]): void {

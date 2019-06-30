@@ -1,51 +1,58 @@
 import { Injectable } from '@angular/core';
 import { Ingredient } from 'src/app/models/ingredient.model';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { IngredientDto } from '../../models/ingredient-dto.model';
+import { IngredientBuilderService } from './ingredient-builder.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingService {
-  private ingredients: Ingredient[] = [
-    new Ingredient('Apples', 5),
-    new Ingredient('Tomatoes', 10)
-  ];
+
+  constructor(private http: HttpClient,
+              private ingredientBuilder: IngredientBuilderService) {}
 
   private ingredientsSubject = new Subject<Ingredient[]>();
   ingredients$ = this.ingredientsSubject.asObservable();
 
-  private startEditingSubject = new Subject<number>();
+  private startEditingSubject = new Subject<string>();
   startEditing$ = this.startEditingSubject.asObservable();
 
-  getIngredients(): Ingredient[] {
-    return [...this.ingredients];
+  getIngredients(): Observable<Ingredient[]> {
+    return this.http.get(`https://ng8-course.firebaseio.com/ingredients.json`).pipe(
+      map((ingredients: IngredientDto) => {
+        const ingredientList = this.ingredientBuilder.buildList(ingredients);
+        this.ingredientsSubject.next(ingredientList);
+        return ingredientList;
+      })
+    );
   }
 
-  getIngredient(index: number): Ingredient {
-    return [...this.ingredients][index];
+  getIngredient(index: string): Observable<Ingredient> {
+    return this.http.get<Ingredient>(`https://ng8-course.firebaseio.com/ingredients/${index}.json`);
   }
 
-  addIngredients(ingredients: Ingredient | Ingredient[]): void {
-    if (Array.isArray(ingredients)) {
-      this.ingredients.push(...ingredients);
-    } else {
-      this.ingredients.push(ingredients);
-    }
-
-    this.ingredientsSubject.next([...this.ingredients]);
+  addIngredients(ingredients: Ingredient[]): void {
+    ingredients.forEach((ingredient: Ingredient) => this.addIngredient(ingredient).subscribe());
   }
 
-  startEditing(index: number): void {
+  addIngredient(ingredient: Ingredient): Observable<Ingredient[]> {
+    return this.http.post<Ingredient>(`https://ng8-course.firebaseio.com/ingredients.json`, ingredient).pipe(
+      switchMap(() => this.getIngredients())
+    );
+  }
+
+  startEditing(index: string): void {
     this.startEditingSubject.next(index);
   }
 
-  updateIngredient(index: number, newIngredient: Ingredient): void {
-    this.ingredients[index] = newIngredient;
-    this.ingredientsSubject.next([...this.ingredients]);
+  updateIngredient(index: string, ingredient: Ingredient): Observable<Ingredient> {
+    return this.http.patch<Ingredient>(`https://ng8-course.firebaseio.com/ingredients/${index}.json`, ingredient);
   }
 
-  deleteIngredient(index: number): void {
-    this.ingredients.splice(index, 1);
-    this.ingredientsSubject.next([...this.ingredients]);
+  deleteIngredient(index: string): Observable<Ingredient> {
+    return this.http.delete<Ingredient>(`https://ng8-course.firebaseio.com/ingredients/${index}.json`);
   }
 }
