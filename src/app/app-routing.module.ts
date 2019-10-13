@@ -7,6 +7,8 @@ import { RecipeDetailComponent } from './components/recipe/recipe-detail/recipe-
 import { RecipeEditComponent } from './components/recipe/recipe-edit/recipe-edit.component';
 import { RecipeResolverService } from './services/recipe/recipe-resolver.service';
 import { IngredientResolverService } from './services/shopping/ingredient-resolver.service';
+import { AuthComponent } from './components/auth/auth.component';
+import { AuthGuard } from './services/auth/auth.guard';
 
 const appRoutes: Routes = [
   {
@@ -17,6 +19,7 @@ const appRoutes: Routes = [
   {
     path: 'recipes',
     component: RecipeViewComponent,
+    canActivate: [AuthGuard],
     resolve: {
       recipes: RecipeResolverService
     },
@@ -33,6 +36,7 @@ const appRoutes: Routes = [
       ingredients: IngredientResolverService
     }
   },
+  { path: 'auth', component: AuthComponent }
 ];
 
 @NgModule({
