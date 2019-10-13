@@ -10,16 +10,19 @@ import { RecipeBuilderService } from './recipe-builder.service';
   providedIn: 'root'
 })
 export class RecipeService {
-  
-  constructor (private http: HttpClient, private recipeBuilderService: RecipeBuilderService) {}
+
+  constructor (
+    private _http: HttpClient,
+    private _recipeBuilderService: RecipeBuilderService
+  ) {}
 
   private recipeSubject = new Subject<Recipe[]>();
   recipes$ = this.recipeSubject.asObservable();
 
   getRecipes(): Observable<Recipe[]> {
-    return this.http.get(`https://ng8-course.firebaseio.com/recipes.json`).pipe(
+    return this._http.get(`https://ng8-course.firebaseio.com/recipes.json`).pipe(
       map((recipes: RecipeDto) => {
-        const recipeList = this.recipeBuilderService.buildList(recipes);
+        const recipeList = this._recipeBuilderService.buildList(recipes);
         this.recipeSubject.next(recipeList);
         return recipeList;
       })
@@ -27,20 +30,20 @@ export class RecipeService {
   }
 
   getRecipe(index: number): Observable<Recipe> {
-    return this.http.get<Recipe>(`https://ng8-course.firebaseio.com/recipes/${index}.json`);
+    return this._http.get<Recipe>(`https://ng8-course.firebaseio.com/recipes/${index}.json`);
   }
 
   addRecipe(recipe: Recipe): Observable<Recipe[]> {
-    return this.http.post<Recipe>(`https://ng8-course.firebaseio.com/recipes.json`, recipe).pipe(
+    return this._http.post<Recipe>(`https://ng8-course.firebaseio.com/recipes.json`, recipe).pipe(
       switchMap(() => this.getRecipes())
     );
   }
 
   updateRecipe(index: number, recipe: Recipe): Observable<Recipe> {
-    return this.http.patch<Recipe>(`https://ng8-course.firebaseio.com/recipes/${index}.json`, recipe);
+    return this._http.patch<Recipe>(`https://ng8-course.firebaseio.com/recipes/${index}.json`, recipe);
   }
 
   deleteRecipe(index: number): Observable<Recipe> {
-    return this.http.delete<Recipe>(`https://ng8-course.firebaseio.com/recipes/${index}.json`);
+    return this._http.delete<Recipe>(`https://ng8-course.firebaseio.com/recipes/${index}.json`);
   }
 }
