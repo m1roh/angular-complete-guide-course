@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subject, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { AuthResponseDto } from '../../models/auth-response-dto';
 import { catchError, tap } from 'rxjs/operators';
 import { User } from '../../models/user.model';
 import { UserDto } from '../../models/user.dto';
 import { UserBuilder } from '../../models/user-builder';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,15 +15,14 @@ import { Router } from '@angular/router';
 export class AuthService {
   public user$ = new BehaviorSubject<User>(null);
 
-  private _firebaseAppKey = 'AIzaSyBo-5SvU7f_pxMNLLoVUqUOtIonAW5XQas';
-  private _signInUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=';
-  private _signUpUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=';
+  private _signInUrl = environment.signInUrl + environment.firebaseAppKey;
+  private _signUpUrl = environment.signUpUrl + environment.firebaseAppKey;
   private _tokenExpirationTimer: number;
 
   constructor(private _http: HttpClient, private _router: Router, private _userBuilder: UserBuilder) { }
 
   public signUp(email: string, password: string): Observable<UserDto> {
-    return this._http.post<AuthResponseDto>(`${this._signUpUrl}${this._firebaseAppKey}`, {
+    return this._http.post<AuthResponseDto>(this._signUpUrl, {
       email,
       password,
       returnSecureToken: true
@@ -33,7 +33,7 @@ export class AuthService {
   }
 
   public login(email: string, password: string): Observable<UserDto> {
-    return this._http.post<AuthResponseDto>(`${this._signInUrl}${this._firebaseAppKey}`, {
+    return this._http.post<AuthResponseDto>(this._signInUrl, {
       email,
       password,
       returnSecureToken: true
