@@ -5,6 +5,8 @@ import { map, switchMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { IngredientDto } from '../../models/ingredient-dto.model';
 import { IngredientBuilderService } from './ingredient-builder.service';
+import { Store } from '@ngrx/store';
+import * as ShoppingListActions from '../../stores/shopping-list/shopping-list.actions';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +14,8 @@ import { IngredientBuilderService } from './ingredient-builder.service';
 export class ShoppingService {
 
   constructor(private http: HttpClient,
-              private ingredientBuilder: IngredientBuilderService) {}
+              private ingredientBuilder: IngredientBuilderService,
+              private store: Store<{ shoppingList: { ingredients: Ingredient[] } }>) {}
 
   private ingredientsSubject = new Subject<Ingredient[]>();
   ingredients$ = this.ingredientsSubject.asObservable();
@@ -24,7 +27,8 @@ export class ShoppingService {
     return this.http.get(`https://ng8-course.firebaseio.com/ingredients.json`).pipe(
       map((ingredients: IngredientDto) => {
         const ingredientList = this.ingredientBuilder.buildList(ingredients);
-        this.ingredientsSubject.next(ingredientList);
+        // this.ingredientsSubject.next(ingredientList);
+        this.store.dispatch(new ShoppingListActions.AddIngredients(ingredientList));
         return ingredientList;
       })
     );

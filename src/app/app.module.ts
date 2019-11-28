@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { CoreModule } from './core.module';
 import { HeaderComponent } from './components/header/header.component';
+import { StoreModule } from '@ngrx/store';
+import { shoppingListReducer } from './stores/shopping-list/shopping-list.reducer';
 
 @NgModule({
   declarations: [
@@ -15,6 +17,8 @@ import { HeaderComponent } from './components/header/header.component';
   imports: [
     BrowserModule,
     HttpClientModule,
+
+    StoreModule.forRoot({ shoppingList: shoppingListReducer }),
 
     AppRoutingModule,
     CoreModule,
