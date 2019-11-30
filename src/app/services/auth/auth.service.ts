@@ -8,18 +8,25 @@ import { UserDto } from '../../models/user.dto';
 import { UserBuilder } from '../../models/user-builder';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../stores/root/app.reducer';
+import * as AuthActions from '../../stores/auth/auth.actions';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  public user$ = new BehaviorSubject<User>(null);
+  // public user$ = new BehaviorSubject<User>(null);
 
   private _signInUrl = environment.signInUrl + environment.firebaseAppKey;
   private _signUpUrl = environment.signUpUrl + environment.firebaseAppKey;
   private _tokenExpirationTimer: number;
 
-  constructor(private _http: HttpClient, private _router: Router, private _userBuilder: UserBuilder) { }
+  constructor(
+    private _http: HttpClient,
+    private _router: Router,
+    private _store: Store<fromRoot.AppState>,
+    private _userBuilder: UserBuilder) { }
 
   public signUp(email: string, password: string): Observable<UserDto> {
     return this._http.post<AuthResponseDto>(this._signUpUrl, {
@@ -53,11 +60,13 @@ export class AuthService {
     loadedUser.token = loadedUser._token;
     const expirationDate = new Date(loadedUser._tokenExpirationDate).getTime() - new Date().getTime() ;
     this._autoLogout(expirationDate);
-    this.user$.next(loadedUser);
+    // this.user$.next(loadedUser);
+    this._store.dispatch(new AuthActions.Login({...loadedUser}));
   }
 
   public logout(): void {
-    this.user$.next(null);
+    // this.user$.next(null);
+    this._store.dispatch(new AuthActions.Logout());
     localStorage.removeItem('userData');
 
     if (this._tokenExpirationTimer) {
@@ -96,6 +105,7 @@ export class AuthService {
 
     const user = this._userBuilder.build(userResponse);
     localStorage.setItem('userData', JSON.stringify(user));
-    this.user$.next(user);
+    // this.user$.next(user);
+    this._store.dispatch(new AuthActions.Login(this._userBuilder.build(userResponse)));
   }
 }
