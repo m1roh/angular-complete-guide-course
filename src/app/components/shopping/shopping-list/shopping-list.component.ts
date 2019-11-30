@@ -5,7 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import * as fromShoppingList from '../../../stores/shopping-list/shopping-list.reducer';
+import * as fromRoot from '../../../stores/root/app.reducer';
 import * as ShoppingListActions from '../../../stores/shopping-list/shopping-list.actions';
 
 @Component({
@@ -21,7 +21,7 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private shoppingService: ShoppingService,
-    private store: Store<fromShoppingList.AppState>
+    private store: Store<fromRoot.AppState>
   ) { }
 
   ngOnInit(): void {

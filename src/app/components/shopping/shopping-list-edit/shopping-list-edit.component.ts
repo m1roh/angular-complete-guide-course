@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Ingredient } from '../../../models/ingredient.model';
-import { ShoppingService } from 'src/app/services/shopping/shopping.service';
+import { ShoppingService } from '../../../services/shopping/shopping.service';
 import { NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
-import * as fromShoppingList from '../../../stores/shopping-list/shopping-list.reducer';
+import * as fromRoot from '../../../stores/root/app.reducer';
 import * as ShoppingListActions from '../../../stores/shopping-list/shopping-list.actions';
 import { Store } from '@ngrx/store';
 
@@ -23,7 +23,7 @@ export class ShoppingListEditComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<any>();
 
   constructor(private shoppingService: ShoppingService,
-              private store: Store<fromShoppingList.AppState>) {}
+              private store: Store<fromRoot.AppState>) {}
 
   ngOnInit(): void {
     this.store.select('shoppingList').pipe(
