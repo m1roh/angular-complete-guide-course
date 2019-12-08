@@ -22,6 +22,8 @@ export class AuthService {
   private _signUpUrl = environment.signUpUrl + environment.firebaseAppKey;
   private _tokenExpirationTimer: number;
 
+  private _noUserAction = { type: 'NO USER' };
+
   constructor(
     private _http: HttpClient,
     private _store: Store<fromRoot.AppState>,
@@ -43,11 +45,11 @@ export class AuthService {
     });
   }
 
-  public autoLogin(): AuthenticateSuccess | string {
+  public autoLogin(): AuthenticateSuccess | { type: string } {
     const loadedUser = JSON.parse(localStorage.getItem('userData'));
 
     if (!loadedUser) {
-      return 'No User';
+      return this._noUserAction;
     }
 
     loadedUser.token = loadedUser._token;
