@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { AuthResponseDto } from '../../models/auth-response-dto';
-import { catchError, tap } from 'rxjs/operators';
-import { User } from '../../models/user.model';
-import { UserDto } from '../../models/user.dto';
-import { UserBuilder } from '../../models/user-builder';
-import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+
+import { Observable, of } from 'rxjs';
+
 import { Store } from '@ngrx/store';
-import * as fromRoot from '../../stores/root/app.reducer';
+
 import * as AuthActions from '../../stores/auth/auth.actions';
+import * as fromRoot from '../../stores/root/app.reducer';
+import { AuthenticateSuccess, AuthenticateFail } from '../../stores/auth/auth.actions';
+import { AuthResponseDto } from '../../models/auth-response-dto';
+import { environment } from '../../../environments/environment';
+import { UserBuilder } from '../../models/user-builder';
+import { UserDto } from '../../models/user.dto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // public user$ = new BehaviorSubject<User>(null);
 
   private _signInUrl = environment.signInUrl + environment.firebaseAppKey;
   private _signUpUrl = environment.signUpUrl + environment.firebaseAppKey;
@@ -24,7 +24,6 @@ export class AuthService {
 
   constructor(
     private _http: HttpClient,
-    private _router: Router,
     private _store: Store<fromRoot.AppState>,
     private _userBuilder: UserBuilder) { }
 
@@ -33,10 +32,7 @@ export class AuthService {
       email,
       password,
       returnSecureToken: true
-    }).pipe(
-      catchError(this._handleError),
-      tap((userResponse: UserDto) => this._handleAuthentication(userResponse))
-    );
+    });
   }
 
   public login(email: string, password: string): Observable<UserDto> {
@@ -44,46 +40,34 @@ export class AuthService {
       email,
       password,
       returnSecureToken: true
-    }).pipe(
-      catchError(this._handleError),
-      tap((userResponse: UserDto) => this._handleAuthentication(userResponse))
-    );
+    });
   }
 
-  public autoLogin(): void {
+  public autoLogin(): AuthenticateSuccess | string {
     const loadedUser = JSON.parse(localStorage.getItem('userData'));
 
     if (!loadedUser) {
-      return;
+      return 'No User';
     }
 
     loadedUser.token = loadedUser._token;
     const expirationDate = new Date(loadedUser._tokenExpirationDate).getTime() - new Date().getTime() ;
     this._autoLogout(expirationDate);
-    // this.user$.next(loadedUser);
-    this._store.dispatch(new AuthActions.Login({...loadedUser}));
+    return new AuthActions.AuthenticateSuccess({...loadedUser});
   }
 
   public logout(): void {
-    // this.user$.next(null);
-    this._store.dispatch(new AuthActions.Logout());
     localStorage.removeItem('userData');
 
     if (this._tokenExpirationTimer) {
       clearTimeout(this._tokenExpirationTimer);
     }
-
-    this._router.navigate(['/auth']);
   }
 
-  private _autoLogout(expirationDuration: number): void {
-    this._tokenExpirationTimer = setTimeout(() => this.logout(), expirationDuration);
-  }
-
-  private _handleError(errorRes: HttpErrorResponse): Observable<never> {
+  public handleError(errorRes: HttpErrorResponse): Observable<AuthenticateFail> {
     let errorMessage = 'An unknown error occurred !';
     if (!errorRes.error || !errorRes.error.error) {
-      return throwError(errorRes);
+      return of(new AuthActions.AuthenticateFail(errorRes.message));
     }
     switch (errorRes.error.error.message) {
       case 'EMAIL_EXISTS':
@@ -97,15 +81,16 @@ export class AuthService {
         errorMessage = `Something went wrong: ${errorMessage}`;
     }
 
-    return throwError(errorMessage);
+    return of(new AuthActions.AuthenticateFail(errorMessage));
   }
 
-  private _handleAuthentication(userResponse: UserDto): void {
-    this._autoLogout(+userResponse.expiresIn * 1000);
-
+  public handleAuthentication(userResponse: UserDto): AuthenticateSuccess {
     const user = this._userBuilder.build(userResponse);
     localStorage.setItem('userData', JSON.stringify(user));
-    // this.user$.next(user);
-    this._store.dispatch(new AuthActions.Login(this._userBuilder.build(userResponse)));
+    return new AuthActions.AuthenticateSuccess(user);
+  }
+
+  private _autoLogout(expirationDuration: number): void {
+    this._tokenExpirationTimer = setTimeout(() => this._store.dispatch(new AuthActions.Logout()), expirationDuration);
   }
 }

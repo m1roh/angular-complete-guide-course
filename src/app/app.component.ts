@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './services/auth/auth.service';
+
+import { Store } from '@ngrx/store';
+
+import * as AuthActions from './stores/auth/auth.actions';
+import * as fromRoot from './stores/root/app.reducer';
 
 @Component({
   selector: 'app-root',
@@ -8,9 +12,9 @@ import { AuthService } from './services/auth/auth.service';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private _authService: AuthService) {}
+  constructor(private _store: Store<fromRoot.AppState>) {}
 
   ngOnInit(): void {
-    this._authService.autoLogin();
+    this._store.dispatch(new AuthActions.AutoLogin());
   }
 }

@@ -8,6 +8,8 @@ import { CoreModule } from './core.module';
 import { HeaderComponent } from './components/header/header.component';
 import { StoreModule } from '@ngrx/store';
 import * as fromRoot from './stores/root/app.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { AuthEffects } from './stores/auth/auth.effects';
 
 @NgModule({
   declarations: [
@@ -19,6 +21,7 @@ import * as fromRoot from './stores/root/app.reducer';
     HttpClientModule,
 
     StoreModule.forRoot(fromRoot.appReducer),
+    EffectsModule.forRoot([AuthEffects]),
 
     AppRoutingModule,
     CoreModule,
