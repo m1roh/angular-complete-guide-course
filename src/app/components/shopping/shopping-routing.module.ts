@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { IngredientResolverService } from '../../services/shopping/ingredient-resolver.service';
 import { ShoppingListComponent } from './shopping-list/shopping-list.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { LocalizeRouterModule } from '@gilsdav/ngx-translate-router';
 
 const routes: Routes = [
   {
@@ -15,7 +17,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forChild(routes),
+    LocalizeRouterModule.forChild(routes),
+    TranslateModule.forChild()
+  ],
+  exports: [RouterModule, LocalizeRouterModule]
 })
 export class ShoppingRoutingModule {}

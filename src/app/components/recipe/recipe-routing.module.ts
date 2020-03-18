@@ -6,6 +6,8 @@ import { RecipeDetailComponent } from './recipe-detail/recipe-detail.component';
 import { RecipeEditComponent } from './recipe-edit/recipe-edit.component';
 import { RecipeResolverService } from '../../services/recipe/recipe-resolver.service';
 import { RecipeViewComponent } from './recipe-view/recipe-view.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { LocalizeRouterModule } from '@gilsdav/ngx-translate-router';
 
 const routes: Routes = [
   {
@@ -24,7 +26,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forChild(routes),
+    LocalizeRouterModule.forChild(routes),
+    TranslateModule.forChild()
+  ],
+  exports: [RouterModule, LocalizeRouterModule]
 })
 export class RecipeRoutingModule {}

@@ -1,0 +1,8 @@
+{
+  "ROUTES.auth": "auth",
+  "ROUTES.recipes": "recipes",
+  "ROUTES.shoppingList": "shopping-list",
+  "ROUTES.newRecipe": "new",
+  "ROUTES.recipeId": ":id",
+  "ROUTES.recipeEdit": ":id/edit"
+}

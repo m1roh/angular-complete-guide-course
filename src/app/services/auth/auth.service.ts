@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
 
-import { Store } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 
 import * as AuthActions from '../../stores/auth/auth.actions';
 import * as fromRoot from '../../stores/root/app.reducer';
@@ -45,7 +45,7 @@ export class AuthService {
     });
   }
 
-  public autoLogin(): AuthenticateSuccess | { type: string } {
+  public autoLogin(): AuthenticateSuccess | Action {
     const loadedUser = JSON.parse(localStorage.getItem('userData'));
 
     if (!loadedUser) {
