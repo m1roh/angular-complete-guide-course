@@ -17,13 +17,12 @@
     "@angular/compiler": "^8.0.3",
     "@angular/core": "^8.0.3",
     "@angular/forms": "^8.0.3",
-    "@angular/http": "~7.2.15",
     "@angular/platform-browser": "^8.0.3",
     "@angular/platform-browser-dynamic": "^8.0.3",
     "@angular/router": "^8.0.3",
     "@gilsdav/ngx-translate-router": "^3.0.0",
     "@gilsdav/ngx-translate-router-http-loader": "^1.1.1",
-    "@ng-toolkit/universal": "^7.1.2",
+    "@ng-toolkit/universal": "^8.1.0",
     "@ngrx/effects": "^8.5.2",
     "@ngrx/router-store": "^8.5.2",
     "@ngrx/store": "^8.5.2",
@@ -32,6 +31,7 @@
     "bootstrap": "^3.4.1",
     "core-js": "^3.4.4",
     "rxjs": "^6.5.3",
+    "tslib": "^1.11.1",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
