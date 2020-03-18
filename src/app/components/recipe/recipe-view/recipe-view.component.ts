@@ -3,7 +3,10 @@ import { Recipe } from '../../../models/recipe.model';
 import { Subject } from 'rxjs';
 import { RecipeService } from '../../../services/recipe/recipe.service';
 import { ActivatedRoute } from '@angular/router';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../../stores/root/app.reducer';
+import * as fromRecipes from '../../../stores/recipes/recipes.reducer';
 
 @Component({
   selector: 'app-recipe-view',
@@ -16,11 +19,16 @@ export class RecipeViewComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<any>();
 
   constructor(private recipeService: RecipeService,
-              private route: ActivatedRoute) {}
+              private route: ActivatedRoute,
+              private _store: Store<fromRoot.AppState>) {}
 
   ngOnInit(): void {
     this.route.data.pipe(takeUntil(this.destroy$)).subscribe((data) => this.recipes = data.recipes);
-    this.recipeService.recipes$.pipe(takeUntil(this.destroy$)).subscribe((recipes: Recipe[]) => this.recipes = recipes);
+    this._store.select('recipes')
+      .pipe(
+        takeUntil(this.destroy$),
+        map((recipeState: fromRecipes.State) => recipeState.recipes)
+      ).subscribe((recipes: Recipe[]) => this.recipes = recipes);
   }
 
   ngOnDestroy(): void {

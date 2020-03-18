@@ -6,6 +6,9 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { RecipeService } from '../../../services/recipe/recipe.service';
 import { switchMap, takeUntil } from 'rxjs/operators';
+import * as fromRoot from '../../../stores/root/app.reducer';
+import * as fromRecipes from '../../../stores/recipes/recipes.reducer';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-recipe-detail',
@@ -19,7 +22,8 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
   constructor(private shoppingService: ShoppingService,
               private recipeService: RecipeService,
               private router: Router,
-              private route: ActivatedRoute) {}
+              private route: ActivatedRoute,
+              private _store: Store<fromRoot.AppState>) {}
 
   private destroy$ = new Subject<any>();
 
