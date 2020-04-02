@@ -14,7 +14,7 @@ import { Store } from '@ngrx/store';
   styleUrls: ['./shopping-list-edit.component.scss']
 })
 export class ShoppingListEditComponent implements OnInit, OnDestroy {
-  @ViewChild('f', { static: false }) shoppingForm: NgForm;
+  @ViewChild('f') shoppingForm: NgForm;
 
   editMode = false;
   editedItemIndex: string;

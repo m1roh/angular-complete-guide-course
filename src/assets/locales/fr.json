@@ -4,5 +4,5 @@
   "ROUTES.shoppingList": "liste-de-course",
   "ROUTES.newRecipe": "nouveau",
   "ROUTES.recipeId": ":id",
-  "ROUTES.recipeEdit": ":id/edition"
+  "ROUTES.edit": "edition"
 }

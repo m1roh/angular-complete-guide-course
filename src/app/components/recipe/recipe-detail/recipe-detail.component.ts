@@ -9,6 +9,7 @@ import { switchMap, takeUntil } from 'rxjs/operators';
 import * as fromRoot from '../../../stores/root/app.reducer';
 import * as fromRecipes from '../../../stores/recipes/recipes.reducer';
 import { Store } from '@ngrx/store';
+import { LocalizeRouterService } from '@gilsdav/ngx-translate-router';
 
 @Component({
   selector: 'app-recipe-detail',
@@ -19,11 +20,14 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
   recipe: Recipe;
   id: number;
 
-  constructor(private shoppingService: ShoppingService,
-              private recipeService: RecipeService,
-              private router: Router,
-              private route: ActivatedRoute,
-              private _store: Store<fromRoot.AppState>) {}
+  constructor(
+    private localize: LocalizeRouterService,
+    private shoppingService: ShoppingService,
+    private recipeService: RecipeService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private _store: Store<fromRoot.AppState>
+  ) {}
 
   private destroy$ = new Subject<any>();
 
@@ -47,7 +51,8 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
   }
 
   onEditRecipe(): void {
-    this.router.navigate(['edit'], { relativeTo: this.route });
+    const url = this.localize.translateRoute('edit');
+    this.router.navigate([url], { relativeTo: this.route });
   }
 
   onDeleteRecipe(): void {

@@ -18,7 +18,7 @@ import { PlaceholderDirective } from '../../directives/placeholder.directive';
   styleUrls: ['./auth.component.scss']
 })
 export class AuthComponent implements OnInit, OnDestroy {
-  @ViewChild(PlaceholderDirective, { static: false }) public alertHost: PlaceholderDirective;
+  @ViewChild(PlaceholderDirective) public alertHost: PlaceholderDirective;
 
   public isLoginMode = true;
   public isLoading = false;

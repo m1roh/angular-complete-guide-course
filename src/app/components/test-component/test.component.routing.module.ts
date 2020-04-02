@@ -12,7 +12,7 @@ const routes: Routes = [
   {
     path: '',
     component: RecipeViewComponent,
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     resolve: {
       recipes: RecipeResolverService
     },

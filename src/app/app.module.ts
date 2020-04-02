@@ -12,13 +12,13 @@ import { EffectsModule } from '@ngrx/effects';
 import { AuthEffects } from './stores/auth/auth.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { DefaultRouterStateSerializer, StoreRouterConnectingModule } from '@ngrx/router-store';
 import { RecipesEffects } from './stores/recipes/recipes.effects';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/locales/', '.json');
+  return new TranslateHttpLoader(http, `${environment.locales}assets/locales/`, '.json');
 }
 
 @NgModule({
@@ -27,13 +27,13 @@ export function createTranslateLoader(http: HttpClient) {
     HeaderComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     HttpClientModule,
 
     CoreModule,
     StoreModule.forRoot(fromRoot.appReducer),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
-    StoreRouterConnectingModule.forRoot(),
+    StoreRouterConnectingModule.forRoot({ serializer: DefaultRouterStateSerializer }),
 
     EffectsModule.forRoot([AuthEffects, RecipesEffects]),
     AppRoutingModule,

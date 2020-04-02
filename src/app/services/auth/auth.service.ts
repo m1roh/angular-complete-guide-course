@@ -12,6 +12,7 @@ import { AuthResponseDto } from '../../models/auth-response-dto';
 import { environment } from '../../../environments/environment';
 import { UserBuilder } from '../../models/user-builder';
 import { UserDto } from '../../models/user.dto';
+import { global } from '@angular/compiler/src/util';
 
 @Injectable({
   providedIn: 'root'
@@ -93,6 +94,6 @@ export class AuthService {
   }
 
   private _autoLogout(expirationDuration: number): void {
-    this._tokenExpirationTimer = setTimeout(() => this._store.dispatch(new AuthActions.Logout()), expirationDuration);
+    this._tokenExpirationTimer = global.setTimeout(() => this._store.dispatch(new AuthActions.Logout()), expirationDuration);
   }
 }
